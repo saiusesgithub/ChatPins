@@ -1,21 +1,50 @@
 # ChatPins
 
-ChatPins is a Chrome Manifest V3 extension for pinning important AI replies and jumping back to them later.
+> Pin important AI replies. Jump back later.
 
-ChatPins saves a local snapshot and hash of every pinned reply in Chrome extension storage. This data stays on the user's device.
+ChatPins is a Chrome extension for saving important assistant replies inside long AI conversations. Pin a useful ChatGPT response, find it later in the popup, and open the original conversation at that reply.
 
-- **Open** loads the original ChatGPT conversation and tries to jump to the pinned reply.
-- **View** displays the saved local snapshot, even when the original message cannot be found or loaded.
+## Why it exists
 
-## Development
+Long AI chats become difficult to navigate. Browser bookmarks can reopen a conversation, but they cannot identify the specific reply that mattered. ChatPins adds message-level bookmarks and keeps a local snapshot as a reliable fallback.
 
-This project uses plain JavaScript, HTML, and CSS. It has no dependencies or build step.
+## MVP features
 
-To load it locally:
+- Adds a small pin button to ChatGPT assistant replies.
+- Saves the reply text, source conversation, timestamp, and content hash locally.
+- Searches saved pins by title, source, or reply text.
+- Opens the original conversation and attempts to scroll to the pinned reply.
+- Displays the saved snapshot when the original reply cannot be found.
+- Copies snapshots to the clipboard.
+- Deletes saved pins.
 
-1. Open `chrome://extensions` in Chrome.
-2. Enable **Developer mode**.
+## Install locally in Chrome
+
+1. Open `chrome://extensions`.
+2. Enable **Developer Mode**.
 3. Click **Load unpacked**.
-4. Select this project directory.
+4. Select the ChatPins project folder.
 
-The initial version targets `https://chatgpt.com/*`.
+No dependencies, build tools, or installation commands are required.
+
+## Privacy
+
+ChatPins is local-only:
+
+- All pins and snapshots stay in `chrome.storage.local` on your device.
+- There is no backend or account system.
+- There are no analytics.
+- The extension makes no external network requests.
+
+## Current limitations
+
+- ChatGPT is the only supported AI chat service in the MVP.
+- Jumping to a reply can fail when ChatGPT has not rendered that message, such as in long or lazily loaded conversations.
+- The locally saved snapshot remains available through **View** even when scrolling fails.
+
+## Roadmap
+
+- Firefox support
+- Claude support
+- Tags
+- Export as Markdown
