@@ -60,6 +60,48 @@ function getMessageIndex(container) {
   return getAssistantMessageContainers().indexOf(container);
 }
 
+async function findPinnedMessage(contentHash, textSnapshot) {
+  const [, { normalizeText, hashText }] = await sharedModules;
+  const containers = getAssistantMessageContainers();
+
+  for (const container of containers) {
+    const responseHash = await hashText(getResponseText(container));
+    if (responseHash === contentHash) {
+      return container;
+    }
+  }
+
+  const snapshotStart = normalizeText(textSnapshot).slice(0, 120);
+  if (!snapshotStart) {
+    return null;
+  }
+
+  return (
+    containers.find((container) =>
+      normalizeText(getResponseText(container)).includes(snapshotStart)
+    ) ?? null
+  );
+}
+
+async function scrollToPin(message) {
+  const container = await findPinnedMessage(
+    message.contentHash,
+    message.textSnapshot
+  );
+
+  if (!container) {
+    console.log(
+      "ChatPins could not find this reply. The saved snapshot still exists in the popup."
+    );
+    return false;
+  }
+
+  container.scrollIntoView({ behavior: "smooth", block: "center" });
+  container.classList.add("chatpins-pin-highlight");
+  setTimeout(() => container.classList.remove("chatpins-pin-highlight"), 2000);
+  return true;
+}
+
 async function saveAssistantReply(container, button) {
   const [{ savePin }, { normalizeText, hashText, createId }] =
     await sharedModules;
@@ -157,3 +199,18 @@ const observer = new MutationObserver(scheduleMessageScan);
 observer.observe(document.body, { childList: true, subtree: true });
 
 processAssistantMessages();
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type !== "CHATPINS_SCROLL_TO_PIN") {
+    return false;
+  }
+
+  scrollToPin(message)
+    .then((success) => sendResponse({ success }))
+    .catch((error) => {
+      console.error("ChatPins could not locate this reply", error);
+      sendResponse({ success: false });
+    });
+
+  return true;
+});

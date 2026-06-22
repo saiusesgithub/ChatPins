@@ -35,3 +35,10 @@
   justify-content: flex-start;
   margin-top: 4px;
 }
+
+.chatpins-pin-highlight {
+  border-radius: 10px;
+  background: rgba(255, 214, 64, 0.2);
+  box-shadow: 0 0 0 3px rgba(255, 194, 10, 0.55);
+  transition: background 180ms ease, box-shadow 180ms ease;
+}

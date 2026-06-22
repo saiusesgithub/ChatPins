@@ -29,6 +29,28 @@ function createPinListItem(pin) {
   const actions = document.createElement("div");
   actions.className = "pin-actions";
 
+  const openButton = createTextElement("button", "pin-action primary", "Open");
+  openButton.type = "button";
+  openButton.addEventListener("click", async () => {
+    openButton.disabled = true;
+
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: "CHATPINS_OPEN_PIN",
+        pin,
+      });
+
+      if (!response?.success) {
+        throw new Error("Background worker could not open the pin");
+      }
+
+      window.close();
+    } catch (error) {
+      openButton.disabled = false;
+      console.error("ChatPins could not open this pin", error);
+    }
+  });
+
   const copyButton = createTextElement("button", "pin-action", "Copy");
   copyButton.type = "button";
   copyButton.addEventListener("click", async () => {
@@ -63,7 +85,7 @@ function createPinListItem(pin) {
     formatCreatedAt(pin.createdAt)
   );
   date.dateTime = pin.createdAt || "";
-  actions.append(copyButton, deleteButton);
+  actions.append(openButton, copyButton, deleteButton);
   item.append(
     createTextElement("h2", "pin-title", pin.title || "Untitled pin"),
     createTextElement("p", "pin-source", pin.sourceTitle || "ChatGPT"),
