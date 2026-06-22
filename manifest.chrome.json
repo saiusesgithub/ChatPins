@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "ChatPins",
+  "description": "Pin important AI replies. Jump back later.",
+  "version": "0.1.0",
+  "permissions": ["storage"],
+  "host_permissions": ["https://chatgpt.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chatgpt.com/*"],
+      "js": ["content/chatgpt.js"],
+      "css": ["content/pin-button.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["shared/storage.js", "shared/hash.js"],
+      "matches": ["https://chatgpt.com/*"]
+    }
+  ]
+}

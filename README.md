@@ -27,6 +27,24 @@ Long AI chats become difficult to navigate. Browser bookmarks can reopen a conve
 
 No dependencies, build tools, or installation commands are required.
 
+## Test locally in Firefox
+
+Prepare the Firefox-compatible manifest before loading the extension:
+
+```powershell
+Copy-Item manifest.firefox.json manifest.json
+```
+
+On macOS or Linux, run `cp manifest.firefox.json manifest.json` instead.
+
+Then:
+
+1. Open `about:debugging#/runtime/this-firefox` in Firefox.
+2. Click **Load Temporary Add-on**.
+3. Select `manifest.json` in the ChatPins project folder.
+
+Firefox temporary add-ons are removed when Firefox closes. To switch the project back to its default Chrome manifest, copy `manifest.chrome.json` to `manifest.json`.
+
 ## Privacy
 
 ChatPins is local-only:
