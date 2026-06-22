@@ -4,7 +4,7 @@
 }
 
 body {
-  min-width: 280px;
+  width: 340px;
   margin: 0;
   background: Canvas;
   color: CanvasText;
@@ -26,10 +26,40 @@ h1 {
 }
 
 #pin-list {
+  display: grid;
+  gap: 10px;
   margin: 0;
-  padding-left: 20px;
+  padding: 0;
+  list-style: none;
 }
 
-#pin-list li + li {
-  margin-top: 8px;
+.pin-item {
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+  border-radius: 8px;
+}
+
+.pin-title {
+  margin: 0;
+  font-size: 14px;
+}
+
+.pin-source,
+.pin-date,
+.pin-preview {
+  display: block;
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+
+.pin-source {
+  font-weight: 600;
+}
+
+.pin-date {
+  color: GrayText;
+}
+
+.pin-preview {
+  line-height: 1.4;
 }

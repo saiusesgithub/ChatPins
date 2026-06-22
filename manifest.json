@@ -17,5 +17,11 @@
       "js": ["content/chatgpt.js"],
       "css": ["content/pin-button.css"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["shared/storage.js", "shared/hash.js"],
+      "matches": ["https://chatgpt.com/*"]
+    }
   ]
 }

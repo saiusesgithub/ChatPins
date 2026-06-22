@@ -3,6 +3,10 @@
 console.log("ChatPins loaded on ChatGPT");
 
 const PROCESSED_ATTRIBUTE = "data-chatpins-processed";
+const sharedModules = Promise.all([
+  import(chrome.runtime.getURL("shared/storage.js")),
+  import(chrome.runtime.getURL("shared/hash.js")),
+]);
 
 // ChatGPT's DOM can change. Keep site-specific selectors inside these helpers so
 // a future adapter can replace them without changing the injection logic.
@@ -46,6 +50,39 @@ function getResponseText(container) {
   return copy.innerText.trim();
 }
 
+function getSourceUrl() {
+  const sourceUrl = new URL(window.location.href);
+  sourceUrl.hash = "";
+  return sourceUrl.toString();
+}
+
+function getMessageIndex(container) {
+  return getAssistantMessageContainers().indexOf(container);
+}
+
+async function saveAssistantReply(container, button) {
+  const [{ savePin }, { normalizeText, hashText, createId }] =
+    await sharedModules;
+  const textSnapshot = getResponseText(container);
+  const normalizedText = normalizeText(textSnapshot);
+
+  const pin = {
+    id: createId(),
+    type: "chatgpt-reply",
+    title: normalizedText.slice(0, 80),
+    sourceUrl: getSourceUrl(),
+    sourceTitle: document.title,
+    messageIndex: getMessageIndex(container),
+    contentHash: await hashText(normalizedText),
+    textSnapshot,
+    createdAt: new Date().toISOString(),
+  };
+
+  await savePin(pin);
+  button.textContent = "📌 Pinned";
+  button.disabled = true;
+}
+
 function createPinButton(container) {
   const button = document.createElement("button");
   button.type = "button";
@@ -53,10 +90,18 @@ function createPinButton(container) {
   button.textContent = "📌 Pin";
   button.setAttribute("aria-label", "Pin this assistant reply");
 
-  button.addEventListener("click", (event) => {
+  button.addEventListener("click", async (event) => {
     event.preventDefault();
     event.stopPropagation();
-    console.log("ChatPins response:", getResponseText(container));
+
+    button.disabled = true;
+
+    try {
+      await saveAssistantReply(container, button);
+    } catch (error) {
+      button.disabled = false;
+      console.error("ChatPins could not save this reply", error);
+    }
   });
 
   return button;
