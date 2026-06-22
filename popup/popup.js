@@ -51,6 +51,23 @@ function createPinListItem(pin) {
     }
   });
 
+  const snapshot = createTextElement(
+    "div",
+    "pin-snapshot",
+    String(pin.textSnapshot ?? "")
+  );
+  snapshot.hidden = true;
+
+  const viewButton = createTextElement("button", "pin-action", "View");
+  viewButton.type = "button";
+  viewButton.setAttribute("aria-expanded", "false");
+  viewButton.addEventListener("click", () => {
+    const willShow = snapshot.hidden;
+    snapshot.hidden = !willShow;
+    viewButton.textContent = willShow ? "Hide" : "View";
+    viewButton.setAttribute("aria-expanded", String(willShow));
+  });
+
   const copyButton = createTextElement("button", "pin-action", "Copy");
   copyButton.type = "button";
   copyButton.addEventListener("click", async () => {
@@ -85,12 +102,13 @@ function createPinListItem(pin) {
     formatCreatedAt(pin.createdAt)
   );
   date.dateTime = pin.createdAt || "";
-  actions.append(openButton, copyButton, deleteButton);
+  actions.append(openButton, viewButton, copyButton, deleteButton);
   item.append(
     createTextElement("h2", "pin-title", pin.title || "Untitled pin"),
     createTextElement("p", "pin-source", pin.sourceTitle || "ChatGPT"),
     date,
     createTextElement("p", "pin-preview", getPreview(pin.textSnapshot)),
+    snapshot,
     actions
   );
   return item;

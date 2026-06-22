@@ -2,7 +2,10 @@
 
 ChatPins is a Chrome Manifest V3 extension for pinning important AI replies and jumping back to them later.
 
-ChatPins keeps local snapshots and hashes of pinned replies in Chrome extension storage. This data stays on the user's device.
+ChatPins saves a local snapshot and hash of every pinned reply in Chrome extension storage. This data stays on the user's device.
+
+- **Open** loads the original ChatGPT conversation and tries to jump to the pinned reply.
+- **View** displays the saved local snapshot, even when the original message cannot be found or loaded.
 
 ## Development
 
